@@ -1,6 +1,6 @@
 Probando login con admin...
 ❌ Error en login:
-Status: 500
+Status: 400
 Data: {
-  "msg": "Error del servidor"
+  "msg": "Credenciales inválidas"
 }

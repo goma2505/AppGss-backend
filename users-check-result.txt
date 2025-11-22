@@ -1,0 +1,8 @@
+Conectado a MongoDB
+Total de usuarios: 6
+- Username: alfredo.gomez, Email: undefined, Name: Alfredo Gomez
+- Username: test, Email: undefined, Name: Test Admin
+- Username: guardia.prueba.alba, Email: guardias@gmail.com, Name: Guardia Prueba Alba
+- Username: Reside.alba.prueba, Email: reside@prueba.co, Name: Residente de prueba
+- Username: guardia.del.alba, Email: undefined, Name: guardia del alba
+- Username: testuser, Email: undefined, Name: Test User

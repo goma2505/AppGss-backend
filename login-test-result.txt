@@ -1,0 +1,6 @@
+Probando login con admin...
+❌ Error en login:
+Status: 500
+Data: {
+  "msg": "Error del servidor"
+}

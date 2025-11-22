@@ -1,0 +1,5 @@
+Testing direct connection to server...
+URL: http://localhost:5000/api/auth/login
+Data: {"email":"admin","password":"admin1234"}
+
+Request timeout

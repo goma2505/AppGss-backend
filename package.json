@@ -1,67 +1,25 @@
+```json
 {
-  "name": "appgss",
-  "private": true,
-  "version": "0.0.0",
+  "name": "appgss-backend",
+  "version": "1.0.0",
   "type": "module",
+  "description": "GSS Backend API Server",
+  "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:prod": "vite build --mode production",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "server": "node server/index.js",
-    "atlas:test": "node server/test-atlas-connection.js",
-    "test": "vitest",
-    "android": "node sync-android.js && npx cap open android",
-    "android:sync": "node sync-android.js",
-    "android:live": "npm run build && npx cap run android",
-    "android:build": "npm run build && npx cap build android",
-    "build:apk": "node build-production-apk.js",
-    "update:api": "node update-api-url.js",
-    "ios:add": "npx cap add ios",
-    "ios:build": "npm run build && npx cap build ios"
+    "start": "node index.js",
+    "server": "node index.js"
   },
   "dependencies": {
-    "@capacitor/android": "^4.8.1",
-    "@capacitor/app": "^4.1.1",
-    "@capacitor/camera": "^4.1.4",
-    "@capacitor/cli": "^4.8.1",
-    "@capacitor/core": "^4.8.1",
-    "@capacitor/device": "^4.1.0",
-    "@capacitor/haptics": "^4.1.0",
-    "@capacitor/network": "^4.1.0",
-    "@capacitor/preferences": "^4.0.2",
-    "@capacitor/status-bar": "^4.1.1",
-    "@capacitor/toast": "^4.1.0",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^7.3.2",
-    "@mui/material": "^7.3.2",
-    "@mui/x-date-pickers": "^8.11.1",
-    "axios": "^1.11.0",
-    "bcryptjs": "^3.0.2",
-    "date-fns": "^4.1.0",
-    "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.0",
+    "dotenv": "^17.2.3",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-router-dom": "^7.8.2",
-    "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io": "^4.8.1"
   },
-  "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "eslint": "^9.33.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
-    "vite": "^7.1.2",
-    "vitest": "^2.0.5"
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
+```

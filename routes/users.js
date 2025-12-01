@@ -1,4 +1,5 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Service from '../models/Service.js';
 import { auth, adminAuth } from '../middleware/auth.js';
@@ -100,6 +101,38 @@ router.put('/change-password', auth, async (req, res) => {
   } catch (error) {
     console.error('Error cambiando contraseña:', error);
     res.status(500).json({ msg: 'Error del servidor' });
+  }
+});
+
+router.delete('/delete-account', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+    if (['admin', 'administrador', 'superadmin'].includes(String(user.role || '').toLowerCase())) {
+      return res.status(403).json({ msg: 'No autorizado para eliminar esta cuenta' });
+    }
+    await User.deleteOne({ _id: user._id });
+    res.json({ msg: 'Cuenta eliminada exitosamente', userId: String(user._id) });
+  } catch (error) {
+    res.status(500).json({ msg: 'Error del servidor' });
+  }
+});
+
+router.get('/delete-account', async (req, res) => {
+  try {
+    const token = String(req.query.token || '').trim();
+    if (!token) return res.status(400).json({ msg: 'Token requerido' });
+    const secret = process.env.JWT_SECRET || 'gss_production_secret_2024_change_this';
+    const payload = jwt.verify(token, secret);
+    const user = await User.findById(payload.user?.id || payload.userId || payload.id || payload._id);
+    if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+    if (['admin', 'administrador', 'superadmin'].includes(String(user.role || '').toLowerCase())) {
+      return res.status(403).json({ msg: 'No autorizado para eliminar esta cuenta' });
+    }
+    await User.deleteOne({ _id: user._id });
+    res.json({ msg: 'Cuenta eliminada exitosamente', userId: String(user._id) });
+  } catch (error) {
+    res.status(400).json({ msg: 'Token inválido o expirado' });
   }
 });
 

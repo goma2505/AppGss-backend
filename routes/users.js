@@ -11,11 +11,11 @@ router.get('/', auth, async (req, res) => {
   try {
     const { role } = req.query;
     let query = {};
-    
+
     if (role) {
       query.role = role === 'guard' ? 'guardia' : role;
     }
-    
+
     const users = await User.find(query).select('-password');
     res.json(users);
   } catch (error) {
@@ -42,20 +42,20 @@ router.get('/profile', auth, async (req, res) => {
 router.put('/profile', auth, async (req, res) => {
   try {
     const { name, email, phone, address } = req.body;
-    
+
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
-    
+
     // Update fields
     if (name) user.name = name;
     if (email) user.email = email;
     if (phone) user.phone = phone;
     if (address) user.address = address;
-    
+
     await user.save();
-    
+
     res.json({ msg: 'Perfil actualizado exitosamente', user: user.toObject({ transform: (doc, ret) => { delete ret.password; return ret; } }) });
   } catch (error) {
     console.error('Error updating user profile:', error);
@@ -135,5 +135,21 @@ router.get('/delete-account', async (req, res) => {
     res.status(400).json({ msg: 'Token inválido o expirado' });
   }
 });
+
+
+// Delete own account (hard delete) - Standard route
+router.delete('/account', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    await User.findByIdAndDelete(userId);
+    res.sendStatus(204);
+  } catch (error) {
+    console.error('Error deleting account:', error);
+    res.status(500).json({ msg: 'Error del servidor' });
+  }
+});
+
+// Ping endpoint for health check (public)
+router.get('/account/ping', (req, res) => res.json({ ok: true }));
 
 export default router;

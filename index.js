@@ -45,6 +45,7 @@ import CommunityService from './models/CommunityService.js';
 import AuditLog from './models/AuditLog.js';
 
 const app = express();
+console.log('🚀 Starting Server (ROOT) - Version: DeleteAccount-Fix-v3-ROOT');
 const PORT = process.env.PORT || 5000;
 const server = createServer(app);
 const allowedOrigin = (process.env.CLIENT_URL || 'http://localhost:5173');
@@ -85,7 +86,7 @@ app.use((req, res, next) => {
           ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
         });
       }
-    } catch (_) {}
+    } catch (_) { }
   });
   next();
 });
@@ -118,7 +119,7 @@ const upload = multer({
     const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx|txt/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-    
+
     if (mimetype && extname) {
       return cb(null, true);
     } else {
@@ -195,7 +196,7 @@ inMemoryUsers.push({ _id: '9', name: 'Sergio Davila', username: 'Sergio.Davila.A
 
 for (const u of inMemoryUsers) {
   if (u.password && !String(u.password).startsWith('$2')) {
-    try { u.password = bcrypt.hashSync(u.password, 10); } catch (_) {}
+    try { u.password = bcrypt.hashSync(u.password, 10); } catch (_) { }
   }
 }
 
@@ -233,44 +234,44 @@ mongoose.connect(mongoUri, {
   tls: useTls,
   auth: mongoUser && mongoPass ? { username: mongoUser, password: mongoPass } : undefined
 })
-.then(async () => {
-  console.log('✅ MongoDB conectado - cambiando a modo base de datos');
-  isMongoConnected = true;
-  const testAccounts = [
-    { name: 'Administrador Prueba', username: 'admin.prueba', email: 'admin.prueba@gss.com', password: 'admin1234', role: 'admin', serviceCode: 'GSS' },
-    { name: 'Administrador Alf', username: 'admin.alf', email: 'admin.alf@gss.com', password: 'admin1234', role: 'administrador', serviceCode: 'ALBA', allowedServices: ['ALBA'], serviceCodes: ['ALBA'] },
-    { name: 'Supervisor Prueba', username: 'super.prueba', email: 'super.prueba@gss.com', password: 'super1234', role: 'supervisor', serviceCode: 'ALBA' },
-    { name: 'Residente Alba', username: 'reside.alba', email: 'reside.alba@gss.com', password: 'reside1234', role: 'residente', serviceCode: 'ALBA', street: 'Calle Prueba', number: '123' },
-    { name: 'Comité Alba', username: 'comite.alba', email: 'comite.alba@gss.com', password: 'comite1234', role: 'comite', serviceCode: 'ALBA' },
-    { name: 'Guardia Prueba', username: 'guardia.prueba', email: 'guardia.prueba@gss.com', password: 'guardia1234', role: 'guardia', serviceCode: 'ALBA', allowedServices: ['ALBA'] }
-    ,{ name: 'Sergio Davila', username: 'Sergio.Davila.Alba', email: 'sergio.davila.alba@gss.com', password: 'comite1234', role: 'comite', serviceCode: 'ALBA', position: 'Presidente' }
-  ];
-  try {
-    for (const acc of testAccounts) {
-      let existing = await User.findOne({ $or: [{ username: acc.username }, { email: acc.email }] });
-      if (!existing) {
-        const newUser = new User(acc);
-        await newUser.save();
+  .then(async () => {
+    console.log('✅ MongoDB conectado - cambiando a modo base de datos');
+    isMongoConnected = true;
+    const testAccounts = [
+      { name: 'Administrador Prueba', username: 'admin.prueba', email: 'admin.prueba@gss.com', password: 'admin1234', role: 'admin', serviceCode: 'GSS' },
+      { name: 'Administrador Alf', username: 'admin.alf', email: 'admin.alf@gss.com', password: 'admin1234', role: 'administrador', serviceCode: 'ALBA', allowedServices: ['ALBA'], serviceCodes: ['ALBA'] },
+      { name: 'Supervisor Prueba', username: 'super.prueba', email: 'super.prueba@gss.com', password: 'super1234', role: 'supervisor', serviceCode: 'ALBA' },
+      { name: 'Residente Alba', username: 'reside.alba', email: 'reside.alba@gss.com', password: 'reside1234', role: 'residente', serviceCode: 'ALBA', street: 'Calle Prueba', number: '123' },
+      { name: 'Comité Alba', username: 'comite.alba', email: 'comite.alba@gss.com', password: 'comite1234', role: 'comite', serviceCode: 'ALBA' },
+      { name: 'Guardia Prueba', username: 'guardia.prueba', email: 'guardia.prueba@gss.com', password: 'guardia1234', role: 'guardia', serviceCode: 'ALBA', allowedServices: ['ALBA'] }
+      , { name: 'Sergio Davila', username: 'Sergio.Davila.Alba', email: 'sergio.davila.alba@gss.com', password: 'comite1234', role: 'comite', serviceCode: 'ALBA', position: 'Presidente' }
+    ];
+    try {
+      for (const acc of testAccounts) {
+        let existing = await User.findOne({ $or: [{ username: acc.username }, { email: acc.email }] });
+        if (!existing) {
+          const newUser = new User(acc);
+          await newUser.save();
+        }
       }
-    }
-    // Ensure guard account karem.lara.s exists and is valid
-    let karem = await User.findOne({ $or: [{ username: 'karem.lara.s' }, { email: 'karem.lara.s' }] });
-    if (!karem) {
-      karem = new User({ name: 'Karem Lara', username: 'karem.lara.s', role: 'guardia', password: 'guardia1234', serviceCode: 'ALBA', isActive: true });
-      await karem.save();
-    } else {
-      karem.role = 'guardia';
-      karem.isActive = true;
-      if (!karem.serviceCode) karem.serviceCode = 'ALBA';
-      karem.password = 'guardia1234';
-      await karem.save();
-    }
-  } catch (_) {}
-})
-.catch(err => {
-  console.log('❌ MongoDB no disponible:', err.message);
-  console.log('💡 Continuando con datos en memoria...');
-});
+      // Ensure guard account karem.lara.s exists and is valid
+      let karem = await User.findOne({ $or: [{ username: 'karem.lara.s' }, { email: 'karem.lara.s' }] });
+      if (!karem) {
+        karem = new User({ name: 'Karem Lara', username: 'karem.lara.s', role: 'guardia', password: 'guardia1234', serviceCode: 'ALBA', isActive: true });
+        await karem.save();
+      } else {
+        karem.role = 'guardia';
+        karem.isActive = true;
+        if (!karem.serviceCode) karem.serviceCode = 'ALBA';
+        karem.password = 'guardia1234';
+        await karem.save();
+      }
+    } catch (_) { }
+  })
+  .catch(err => {
+    console.log('❌ MongoDB no disponible:', err.message);
+    console.log('💡 Continuando con datos en memoria...');
+  });
 
 mongoose.connection.on('connected', () => { console.log('mongo:connected') })
 mongoose.connection.on('disconnected', () => { console.log('mongo:disconnected') })
@@ -348,11 +349,11 @@ app.post('/api/auth/login', async (req, res) => {
 
 
     let user = null;
-    
+
     // Si MongoDB está conectado, usar la base de datos
     if (isMongoConnected && mongoose.connection.readyState === 1) {
       console.log('Using MongoDB for authentication');
-      user = await User.findOne({ 
+      user = await User.findOne({
         $or: [
           { email: email },
           { username: email }
@@ -366,9 +367,9 @@ app.post('/api/auth/login', async (req, res) => {
       console.log('Using in-memory data for authentication');
       user = inMemoryUsers.find(u => u.email === email || u.username === email);
     }
-    
+
     console.log('User found:', user ? { id: user._id || user.id, username: user.username, email: user.email } : 'NO USER FOUND');
-    
+
     if (!user) {
       console.log('User not found, returning 400');
       return res.status(400).json({ msg: 'Credenciales inválidas' });
@@ -387,7 +388,7 @@ app.post('/api/auth/login', async (req, res) => {
             user = fallbackMemUser;
             console.log('Using in-memory user after DB mismatch');
           }
-        } catch (_) {}
+        } catch (_) { }
       }
       if (!isMatch) {
         console.log('Password mismatch, returning 400');
@@ -458,7 +459,7 @@ app.get('/api/health', (req, res) => {
     2: 'connecting',
     3: 'disconnecting'
   };
-  
+
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -528,7 +529,7 @@ app.post('/api/sync/operation', auth, async (req, res) => {
     }
     try {
       ioInstance && ioInstance.emit('sync:update', { resource, id });
-    } catch (_) {}
+    } catch (_) { }
     res.json({ ok: true });
   } catch (e) {
     console.error('sync operation error', e?.message);
@@ -538,10 +539,10 @@ app.post('/api/sync/operation', auth, async (req, res) => {
 
 app.get('/api/services', async (req, res) => {
   console.log('=== SERVICES ENDPOINT CALLED ===');
-  
+
   try {
     let services = [];
-    
+
     if (mongoose.connection.readyState === 1) {
       console.log('Using MongoDB for services');
       services = await Service.find({ isActive: true });
@@ -552,14 +553,14 @@ app.get('/api/services', async (req, res) => {
       console.log('Using in-memory data for services');
       services = inMemoryServices.filter(s => s.isActive);
     }
-    
+
     console.log(`Found ${services.length} active services`);
-    
+
     res.json({
       success: true,
       services: services
     });
-    
+
   } catch (error) {
     console.error('Error in /api/services:', error);
     res.status(500).json({ error: 'Internal server error', message: error.message });
@@ -587,11 +588,11 @@ app.post('/api/admin/update-alba-users', auth, authorize('admin', 'administrador
     ];
 
     const results = [];
-    
+
     for (const update of userUpdates) {
       const query = update.email ? { email: update.email } : { username: update.username };
       const user = await User.findOne(query);
-      
+
       if (user && (user.role === 'guardia' || user.role === 'residente')) {
         user.subdivision = 'alba';
         await user.save();
@@ -617,7 +618,7 @@ app.post('/api/admin/update-alba-users', auth, authorize('admin', 'administrador
 
     // Verificar usuarios actualizados
     const albaUsers = await User.find({ subdivision: 'alba' });
-    
+
     res.json({
       message: 'Proceso completado',
       results,
@@ -633,7 +634,7 @@ app.post('/api/admin/update-alba-users', auth, authorize('admin', 'administrador
   }
 });
 
-ioInstance = new SocketIOServer(server, { cors: { origin: allowedOrigin, methods: ['GET','POST'] } });
+ioInstance = new SocketIOServer(server, { cors: { origin: allowedOrigin, methods: ['GET', 'POST'] } });
 ioInstance.on('connection', socket => {
   socket.on('sync:emit', data => {
     ioInstance.emit('sync:update', data);
